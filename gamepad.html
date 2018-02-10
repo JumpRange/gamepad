@@ -1,0 +1,138 @@
+<!DOCTYPE html><html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body{text-align: center;}
+      .img{position:absolute;z-index:1;}
+
+        #container{
+            display:inline-block;
+            width:400px;
+            height:400px;
+            margin: 0 auto;
+            position:relative; }
+
+        #canvas{
+            position:relative;
+            z-index:20;
+        }
+
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+    <img class='img' src="snes.png" alt="" />
+    <canvas id="canvas" width="400" height="400"></canvas>
+    </div>
+
+    <script>
+
+    var interval;
+
+    var buttons = {
+      a:1,
+      b:0,
+      x:3,
+      y:2,
+      start:8,
+      select:9,
+      l:4,
+      r:5,
+      up:12,
+      down:13,
+      left:14,
+      right:15,
+    }
+
+    if (!('ongamepadconnected' in window)) {
+      // No gamepad events available, poll instead.
+      interval = setInterval(pollGamepads, 500);
+    }
+
+    function pollGamepads() {
+      var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+      for (var i = 0; i < gamepads.length; i++) {
+        var gp = gamepads[i];
+        if (gp) {
+          gameLoop();
+          clearInterval(interval);
+        }
+      }
+    }
+
+    function buttonPressed(b) {
+      if (typeof(b) == "object") {
+        return b.pressed;
+      }
+      return b == 1.0;
+    }
+
+    function gameLoop() {
+      var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+      if (!gamepads) {
+        return;
+      }
+
+      var c=document.getElementById("canvas");
+      var ctx=c.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (var pad = 0; pad < gamepads.length-1; pad++) {
+        var gp = gamepads[pad];
+        if (gp) {
+
+          ctx.fillStyle = "rgba(255, 255, 255, 0.50)";
+
+          if (buttonPressed(gp.buttons[buttons.x])) {
+            ctx.fillRect(304,163,15,15); //X
+          }
+          if (buttonPressed(gp.buttons[buttons.a])) {
+            ctx.fillRect(341,197,15,15); //A
+          }
+          if (buttonPressed(gp.buttons[buttons.b])) {
+            ctx.fillRect(310,227,15,15); //B
+          }
+          if (buttonPressed(gp.buttons[buttons.y])) {
+            ctx.fillRect(274,193,15,15); //Y
+          }
+
+          if (gp.axes[0] == "-1" || buttonPressed(gp.buttons[buttons.left])) {
+            ctx.fillRect(55,192,24,24); //LEFT
+          }
+          if (gp.axes[0] == "1" || buttonPressed(gp.buttons[buttons.right])) {
+            ctx.fillRect(99,192,24,24); //RIGHT
+          }
+          if (gp.axes[1] == "-1" || buttonPressed(gp.buttons[buttons.up])) {
+            ctx.fillRect(79,168,24,24); //UP
+          }
+          if (gp.axes[1] == "1" || buttonPressed(gp.buttons[buttons.down])) {
+            ctx.fillRect(79,216,24,24); //DOWN
+          }
+
+          ctx.fillStyle = "rgba(0, 0, 0, 0.50)";
+
+          if (buttonPressed(gp.buttons[buttons.l])) {
+            ctx.fillRect(78,114,54,6); //L
+          }
+          if (buttonPressed(gp.buttons[buttons.r])) {
+            ctx.fillRect(275,114,54,6); //R
+          }
+
+          if (buttonPressed(gp.buttons[buttons.start])) {
+            ctx.fillRect(163,203,27,25); //Start
+          }
+          if (buttonPressed(gp.buttons[buttons.select])) {
+            ctx.fillRect(206,203,26,25); //Select
+          }
+
+        }
+
+      }
+
+      start = requestAnimationFrame(gameLoop);
+    }
+
+    </script>
+  </body>
+</html>
